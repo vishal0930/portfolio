@@ -1,4 +1,4 @@
-import { Button } from "@/components/Button";
+import { Button } from "../components/Button";
 import {
   ArrowRight,
   ChevronDown,
@@ -7,6 +7,7 @@ import {
   Download,
 } from "lucide-react";
 import { AnimatedBorderButton } from "../components/AnimatedBorderButton";
+import { useMemo } from "react";
 
 const skills = [
   "React.js",
@@ -35,9 +36,18 @@ const stats = [
 ];
 
 export const Hero = () => {
-  // Replace this with your actual CV file URL
-  const cvUrl = "https://drive.google.com/file/d/1Y2ze1-r98p5ykfyFJ-HZBG9pm3ORCy3x/view?usp=drivesdk";
-  // Or for a direct file link: "/cv.pdf" if you place the file in public folder
+  // Generate random dots once (fixes the purity error)
+  const dots = useMemo(() => {
+    return [...Array(30)].map(() => ({
+      left: Math.random() * 100,
+      top: Math.random() * 100,
+      duration: 15 + Math.random() * 20,
+      delay: Math.random() * 5,
+    }));
+  }, []);
+
+  // Fix for Google Drive download link
+  const cvUrl = "https://drive.google.com/uc?export=download&id=1Y2ze1-r98p5ykfyFJ-HZBG9pm3ORCy3x";
 
   return (
     <section className="relative min-h-screen flex items-center overflow-hidden">
@@ -51,20 +61,18 @@ export const Hero = () => {
         <div className="absolute inset-0 bg-gradient-to-b from-background/20 via-background/80 to-background" />
       </div>
 
-      {/* Green Dots */}
+      {/* Green Dots - Fixed with useMemo */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {[...Array(30)].map((_, i) => (
+        {dots.map((dot, i) => (
           <div
             key={i}
             className="absolute w-1.5 h-1.5 rounded-full opacity-60"
             style={{
               backgroundColor: "#20B2A6",
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-              animation: `slow-drift ${
-                15 + Math.random() * 20
-              }s ease-in-out infinite`,
-              animationDelay: `${Math.random() * 5}s`,
+              left: `${dot.left}%`,
+              top: `${dot.top}%`,
+              animation: `slow-drift ${dot.duration}s ease-in-out infinite`,
+              animationDelay: `${dot.delay}s`,
             }}
           />
         ))}
@@ -101,7 +109,12 @@ export const Hero = () => {
             </div>
 
             <div className="flex flex-wrap gap-4 animate-fade-in animation-delay-300">
-              <Button size="lg">
+              <Button size="lg" onClick={() => {
+                const contactSection = document.querySelector("#contact");
+                if (contactSection) {
+                  contactSection.scrollIntoView({ behavior: "smooth" });
+                }
+              }}>
                 Contact Me <ArrowRight className="w-5 h-5" />
               </Button>
               
@@ -181,6 +194,13 @@ export const Hero = () => {
         <a
           href="#about"
           className="flex flex-col items-center gap-2 text-muted-foreground hover:text-primary transition-colors group"
+          onClick={(e) => {
+            e.preventDefault();
+            const aboutSection = document.querySelector("#about");
+            if (aboutSection) {
+              aboutSection.scrollIntoView({ behavior: "smooth" });
+            }
+          }}
         >
           <span className="text-xs uppercase tracking-wider">Scroll</span>
           <ChevronDown className="w-6 h-6 animate-bounce" />
